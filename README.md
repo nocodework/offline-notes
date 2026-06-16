@@ -57,6 +57,17 @@ You can also open a note straight from a link by passing Markdown in the URL has
 index.html#md=%23%20Hello%0A%0AThis%20note%20was%20opened%20from%20a%20link
 ```
 
+## Use it with Claude Code
+
+This repo ships a small [Claude Code](https://claude.com/claude-code) skill, **donotes**, that opens Markdown straight in offline-notes — handy when you want to read or edit something an AI wrote in a real editor instead of the terminal.
+
+```bash
+git clone https://github.com/nocodework/offline-notes
+cp -r offline-notes/claude-skill/donotes ~/.claude/skills/
+```
+
+Then in Claude Code, say *"open this in offline-notes"* or *"put these notes somewhere I can edit them"*. It base64-encodes the Markdown and opens the editor with it preloaded. Point it at a local `index.html` and it works offline too. See [`claude-skill/donotes`](claude-skill/donotes/SKILL.md).
+
 ## Keyboard shortcuts
 
 | Key | Action | Key | Action |
