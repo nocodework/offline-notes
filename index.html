@@ -336,7 +336,7 @@
       <dt><kbd>-</kbd> / <kbd>1.</kbd></dt><dd>List · <kbd>- [ ]</kbd> task</dd>
       <dt><kbd>&gt;</kbd></dt><dd>Quote · <code>```</code> code</dd>
     </dl>
-    <div class="foot">Everything is saved in this browser as you type. Tip: use Export now and then to keep a copy you own.<br><br>Built by <a href="https://nocodework.io" target="_blank" rel="noopener">NoCodeWork</a>, automation and AI apps.</div>
+    <div class="foot">Everything is saved in this browser as you type. Tip: use Export now and then to keep a copy you own.<br><br>Built by <a href="https://nocodework.io" target="_blank" rel="noopener">NoCodeWork</a>, automation and AI apps.<br>Sibling tool: <a href="https://nocodework.github.io/offline-whiteboard/" target="_blank" rel="noopener">offline-whiteboard</a>.</div>
   </div>
 
   <input type="file" id="importFile" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden>
@@ -777,13 +777,31 @@
   // =====================================================================
   const SEED = "# Welcome to offline-notes\n\nA private Markdown editor that lives in **one HTML file**. Open it, write, done — your notes stay in this browser and never get sent anywhere.\n\n## Try it\n\n- Type Markdown and watch it style itself as you go\n- Switch to **Read** (top bar) for the rendered view\n- Make a new note with the **+** button or `⌘N`\n- `- [ ]` makes a checkbox:\n- [ ] back up important notes with Export\n- [x] keep everything offline\n\n> Tip: it works with no internet at all. Copy the file onto any machine and open it.\n\n```\nIt even handles code blocks.\n```\n\nMade by NoCodeWork.";
 
+  // Open Markdown passed in the URL hash — e.g. a link from Claude Code:
+  //   index.html#md=<uri-encoded markdown>   or   #md64=<base64 UTF-8>
+  function importFromHash() {
+    const m = location.hash.match(/^#md(64)?=([\s\S]+)$/);
+    if (!m) return false;
+    let text;
+    try {
+      if (m[1]) text = decodeURIComponent(escape(atob(m[2])));
+      else text = decodeURIComponent(m[2]);
+    } catch (e) { try { text = m[1] ? atob(m[2]) : m[2]; } catch (e2) { return false; } }
+    history.replaceState(null, '', location.pathname + location.search);
+    newNote(text);
+    flash('Opened from link');
+    return true;
+  }
+
   load();
   setTheme(state.theme);
   setView(state.view);
   applySidebar();
-  if (!state.notes.length) { newNote(SEED); }
-  else if (!activeNote()) { loadNote(sortedNotes()[0].id); }
-  else { loadNote(state.activeId); }
+  if (!importFromHash()) {
+    if (!state.notes.length) { newNote(SEED); }
+    else if (!activeNote()) { loadNote(sortedNotes()[0].id); }
+    else { loadNote(state.activeId); }
+  }
 })();
 </script>
 </body>

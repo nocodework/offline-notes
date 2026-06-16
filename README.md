@@ -44,6 +44,19 @@ Headings, bold and italic, inline code and fenced code blocks, blockquotes, orde
 
 Open the [live demo](https://nocodework.github.io/offline-notes/) and start writing. To use it offline, download `index.html` and double-click it. It's a static file, so you can keep it on a USB stick, drop it on any web host, or `git clone` and open it. No server, no build step.
 
+Grab the file from a terminal (this also works inside Claude Code or Codex):
+
+```bash
+curl -O https://raw.githubusercontent.com/nocodework/offline-notes/main/index.html
+open index.html      # macOS  ·  Linux: xdg-open index.html  ·  Windows: start index.html
+```
+
+You can also open a note straight from a link by passing Markdown in the URL hash, which makes it easy to hand content to it from a script or an AI tool:
+
+```
+index.html#md=%23%20Hello%0A%0AThis%20note%20was%20opened%20from%20a%20link
+```
+
 ## Keyboard shortcuts
 
 | Key | Action | Key | Action |
@@ -71,6 +84,13 @@ Plain JavaScript, no libraries. The writing pane is a real `<textarea>` with a h
 | Open source | yes | no | Obsidian: no |
 
 It's deliberately small: a Markdown notebook you can carry around in one file. If you need sync across devices or plugins, Obsidian or Bear will serve you better.
+
+## Part of the offline series
+
+offline-notes is one of a small family of single-file, offline-first tools by NoCodeWork. Same idea every time: one HTML file, no account, no server, works offline.
+
+- [**offline-whiteboard**](https://github.com/nocodework/offline-whiteboard) — sticky notes, shapes and arrows on an infinite canvas ([demo](https://nocodework.github.io/offline-whiteboard/))
+- **offline-notes** — you're here
 
 ## Contributing
 
