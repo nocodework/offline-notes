@@ -218,6 +218,9 @@
   .prose hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
   .prose img { max-width: 100%; border-radius: 8px; }
   .prose .img-blocked { color: var(--muted); font-style: italic; font-family: inherit; }
+  .prose table { border-collapse: collapse; margin: 0 0 1em; width: 100%; font-size: .94em; }
+  .prose th, .prose td { border: 1px solid var(--border); padding: 7px 11px; text-align: left; }
+  .prose th { background: var(--code-bg); font-weight: 700; }
   .prose > :first-child { margin-top: 0; }
 
   /* help */
@@ -335,6 +338,8 @@
       <dt><kbd>#</kbd></dt><dd>Heading</dd>
       <dt><kbd>-</kbd> / <kbd>1.</kbd></dt><dd>List · <kbd>- [ ]</kbd> task</dd>
       <dt><kbd>&gt;</kbd></dt><dd>Quote · <code>```</code> code</dd>
+      <dt><kbd>|</kbd></dt><dd>Tables (GitHub style)</dd>
+      <dt>Enter</dt><dd>Continues lists & quotes</dd>
     </dl>
     <div class="foot">Everything is saved in this browser as you type. Tip: use Export now and then to keep a copy you own.<br><br>Built by <a href="https://nocodework.io" target="_blank" rel="noopener">NoCodeWork</a>, automation and AI apps.<br>Sibling tool: <a href="https://nocodework.github.io/offline-whiteboard/" target="_blank" rel="noopener">offline-whiteboard</a>.</div>
   </div>
@@ -443,6 +448,19 @@
         while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) { items += '<li>' + inlineMd(escapeHtml(lines[i].replace(/^\s*\d+\.\s+/, ''))) + '</li>'; i++; }
         html += '<ol>' + items + '</ol>'; continue;
       }
+      if (line.includes('|') && i + 1 < lines.length && /^\s*\|?[\s:|-]*-[\s:|-]*\|?\s*$/.test(lines[i + 1])) {
+        flush();
+        const cells = (ln) => ln.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(c => c.trim());
+        const headers = cells(line);
+        const aligns = cells(lines[i + 1]).map(c => { const l = c.startsWith(':'), r = c.endsWith(':'); return l && r ? 'center' : r ? 'right' : l ? 'left' : ''; });
+        i += 2;
+        const rows = [];
+        while (i < lines.length && lines[i].includes('|') && lines[i].trim() !== '') { rows.push(cells(lines[i])); i++; }
+        const cell = (tag, c, k) => '<' + tag + (aligns[k] ? ' style="text-align:' + aligns[k] + '"' : '') + '>' + inlineMd(escapeHtml(c || '')) + '</' + tag + '>';
+        let t = '<table><thead><tr>' + headers.map((h, k) => cell('th', h, k)).join('') + '</tr></thead>';
+        if (rows.length) t += '<tbody>' + rows.map(r => '<tr>' + headers.map((h, k) => cell('td', r[k], k)).join('') + '</tr>').join('') + '</tbody>';
+        html += t + '</table>'; continue;
+      }
       if (/^\s*$/.test(line)) { flush(); i++; continue; }
       para.push(line); i++;
     }
@@ -504,6 +522,28 @@
   ta.addEventListener('scroll', () => { hl.scrollTop = ta.scrollTop; });
 
   ta.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && ta.selectionStart === ta.selectionEnd) {
+      const pos = ta.selectionStart;
+      const lineStart = ta.value.lastIndexOf('\n', pos - 1) + 1;
+      const line = ta.value.slice(lineStart, pos);
+      const li = line.match(/^(\s*)([-*+]|\d+\.)\s+(\[[ xX]\]\s+)?(.*)$/);
+      if (li) {
+        e.preventDefault();
+        if (li[4].trim() === '') { replaceRange(lineStart, pos, li[1], lineStart + li[1].length); }
+        else {
+          const marker = /^\d+\.$/.test(li[2]) ? li[1] + (parseInt(li[2], 10) + 1) + '. ' : li[1] + li[2] + ' ' + (li[3] ? '[ ] ' : '');
+          replaceRange(pos, pos, '\n' + marker, pos + 1 + marker.length);
+        }
+        return;
+      }
+      const bq = line.match(/^(\s*)>\s?(.*)$/);
+      if (bq) {
+        e.preventDefault();
+        if (bq[2].trim() === '') replaceRange(lineStart, pos, bq[1], lineStart + bq[1].length);
+        else { const p = bq[1] + '> '; replaceRange(pos, pos, '\n' + p, pos + 1 + p.length); }
+        return;
+      }
+    }
     if (e.key === 'Tab') {
       e.preventDefault();
       if (e.shiftKey) indentBlock(true);
@@ -771,6 +811,17 @@
   document.addEventListener('pointerdown', (e) => { if (!helpPanel.hidden && !helpPanel.contains(e.target) && e.target !== helpFab) { helpPanel.hidden = true; helpFab.setAttribute('aria-expanded', 'false'); } });
 
   window.addEventListener('beforeunload', save);
+  document.addEventListener('dragover', (e) => { e.preventDefault(); });
+  document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!f) return;
+    if (f.size > 2 * 1024 * 1024) { flash('File too large (max 2 MB)'); return; }
+    const r = new FileReader();
+    r.onload = () => { newNote(String(r.result || '')); flash('Imported ' + f.name); };
+    r.onerror = () => flash('Could not read file');
+    r.readAsText(f);
+  });
 
   // =====================================================================
   //  Init

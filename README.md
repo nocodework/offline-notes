@@ -92,6 +92,8 @@ offline-notes is one of a small family of single-file, offline-first tools by No
 - [**offline-whiteboard**](https://github.com/nocodework/offline-whiteboard) — sticky notes, shapes and arrows on an infinite canvas ([demo](https://nocodework.github.io/offline-whiteboard/))
 - **offline-notes** — you're here
 
+[![offline-whiteboard](https://raw.githubusercontent.com/nocodework/offline-whiteboard/main/screenshot.png)](https://nocodework.github.io/offline-whiteboard/)
+
 ## Contributing
 
 Issues and pull requests are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md). It's one file with no toolchain, so there's nothing to set up first.
