@@ -108,6 +108,11 @@ offline-notes is one of a small family of single-file, offline-first tools by No
 
 [![offline-sketch](https://raw.githubusercontent.com/nocodework/offline-sketch/main/screenshot.png)](https://nocodework.github.io/offline-sketch/)
 
+## More open source from NoCodeWork
+
+- **[ai-context-kit](https://github.com/nocodework/ai-context-kit)** — give any AI tool durable context about you and your company
+- **[growth-os](https://github.com/nocodework/growth-os)** — an open Growth OS for any AI agent: audit a site's SEO, speed, GEO and competitors, then act
+
 ## Contributing
 
 Issues and pull requests are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md). It's one file with no toolchain, so there's nothing to set up first.
@@ -119,5 +124,9 @@ Issues and pull requests are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md). It
 ---
 
 <div align="center">
-Built by <a href="https://nocodework.io">NoCodeWork</a>, where we make automation and AI apps for companies.
+
+<a href="https://nocodework.io"><picture><source media="(prefers-color-scheme: dark)" srcset="nocodework-logo-white.png"><img src="nocodework-logo.png" alt="NoCodeWork" width="150"></picture></a>
+
+Built by <a href="https://nocodework.io">NoCodeWork</a>, where we build automation, AI and apps for companies.
+
 </div>
